@@ -1,0 +1,35 @@
+import React from "react";
+import { render } from "react-dom";
+
+class Callopse extends React.Component{
+
+constructor(){
+  super();
+  this.state={
+    showContent:"true"
+  }
+}
+
+ render(){  
+return ( 
+    <div>
+      <a
+        className="btn btn-primary">
+        Link with href
+      </a>
+
+      {
+        this.state.showContent ?(
+          <div className="callopse">
+        {this.props.children}
+      </div>
+        ):null
+      }
+
+      
+    </div>
+    );
+  }
+
+};
+export default Callopse;
