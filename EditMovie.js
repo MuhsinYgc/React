@@ -1,32 +1,61 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import axios from "axios";
+import { useState } from "react";
 
-class EditMovie extends React.Component {
-  state = {
-    name: "",
-    rating: "",
-    overview: "",
-    imageURL: "",
-  };
+const EditMovie =() => {
+ const [name,setName]=useState(0)
+ const [rating,setRating]=useState(0)
+ const [overview,setOverview]=useState(0)
+ const [imageURL,setÝmageURL]=useState(0)
 
-  async componentDidMount() {
-    const id = this.props.match.params.id;
-    const response = await axios.get(`http://localhost:3002/movies/${id}`);
-    const movie = response.data;
-    this.setState({
-      name: movie.name,
-      rating: movie.rating,
-      overview: movie.overview,
-      imageURL: movie.imageURL,
-    });
-  }
-  onInputChange = (e) => {
-    this.setState({
+ const [state,setState]=useState(0)
+ const [count,setCount]=useState(0)
+
+//   useEffect(()=>{
+//      const id = this.props.match.params.id;
+//     const response = await axios.get(`http://localhost:3002/movies/${id}`);
+//     const movie = response.data;
+//      this.setState({
+//       name: movie.name,
+//       rating: movie.rating,
+//       overview: movie.overview,
+//       imageURL: movie.imageURL,
+//   }); 
+// [name,rating,overview,imageURL]
+  
+useEffect(()=>{
+  id = this.props.match.params.id;
+      load();
+      setCount({
+          name: movie.name,
+          rating: movie.rating,
+          overview: movie.overview,
+          imageURL: movie.imageURL,
+},[name,rating,overview,imageURL])
+  // useEffect(()=>{
+  //    id = this.props.match.params.id;
+  //    load();
+    
+
+  //     this.count({
+  //     name: movie.name,
+  //     rating: movie.rating,
+  //     overview: movie.overview,
+  //    imageURL: movie.imageURL,
+  //  })[name,rating,overview,imageURL,]})
+  //   }
+const load=()=>{
+  response = await axios.get(`http://localhost:3002/movies/${id}`);
+  movie = response.data;
+}
+
+  const onInputChange = (e) => {
+    setState({
       [e.target.name]: e.target.value,
     });
   };
 
-  handleFormSubmit = (e) => {
+    const handleFormSubmit = (e) => {
     e.preventDefault();
     const { name, rating, overview, imageURL } = this.state;
     const id = this.props.match.params.id;
@@ -36,14 +65,14 @@ class EditMovie extends React.Component {
       overview: overview,
       imageURL: imageURL,
     };
-    this.props.onEditMovie(id, updatedMovie);
-    this.props.history("/");
+    props.onEditMovie(id, updatedMovie);
+    props.history("/");
   };
 
-  render() {
+ 
     return (
       <div className="container">
-        <form className="mt-5" onSubmit={this.handleFormSubmit}>
+        <form className="mt-5" onSubmit={handleFormSubmit}>
           <input
             className="form-control"
             id="disabledInput"
@@ -58,8 +87,8 @@ class EditMovie extends React.Component {
                 type="text"
                 className="form-control"
                 name="name"
-                value={this.state.name}
-                onChange={this.onInputChange}
+                value={setCount}
+                onChange={onInputChange}
               />
             </div>
             <div className="form-group col-md-2">
@@ -68,8 +97,8 @@ class EditMovie extends React.Component {
                 type="text"
                 className="form-control"
                 name="rating"
-                value={this.state.rating}
-                onChange={this.onInputChange}
+                value={setCount}
+                onChange={onInputChange}
               />
             </div>
           </div>
@@ -80,8 +109,8 @@ class EditMovie extends React.Component {
                 type="text"
                 className="form-control"
                 name="imageURL"
-                value={this.state.imageURL}
-                onChange={this.onInputChange}
+                value={setCount}
+                onChange={onInputChange}
               />
             </div>
           </div>
@@ -92,8 +121,9 @@ class EditMovie extends React.Component {
                 className="form-control"
                 name="overview"
                 rows="5"
-                value={this.state.overview}
-                onChange={this.onInputChange}
+                // value={this.state.overview}
+                value={setCount}
+                onChange={onInputChange}
               ></textarea>
             </div>
           </div>
@@ -105,7 +135,7 @@ class EditMovie extends React.Component {
         </form>
       </div>
     );
-  }
+    
 }
 
 export default EditMovie;
