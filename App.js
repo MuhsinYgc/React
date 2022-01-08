@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import MovieList from "./MovieList";
 import SearchBar from "./SearchBar";
 import AddMovie from "./AddMovie";
@@ -6,115 +6,122 @@ import EditMovie from "./EditMovie";
 import axios from "axios";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 
-class App extends React.Component {
-  state = {
-    movies: [],
-    searchQuery: "",
+const App = () => {
+  const [movies, setMovies] = useState(0);
+  const [searchQuery, setSearchQuery] = useState(0);
+
+  // class App extends React.Component {
+  //   state = {
+  //     movies: [],
+  //     searchQuery: "",
+  //   };
+
+  useEffect(() => {
+    getMovies();
+  }, []);
+
+  // async componentDidMount() {
+  //   this.getMovies();
+  // }
+
+  //---
+
+  const getMovies = async () => {
+    response = await axios.get("http://localhost:3002/movies");
+    // this.setState({ movies: response.data });
+    setMovies = response.data;
   };
 
-  async componentDidMount() {
-    this.getMovies();
-  }
-  async getMovies() {
-    const response = await axios.get("http://localhost:3002/movies");
-    this.setState({ movies: response.data });
-  }
-
-  deleteMovie = async (movie) => {
+  const deleteMovie = useCallback(async (movie) => {
     axios.delete(`http://localhost:3002/movies/${movie.id}`);
-    const newMovieList = this.state.movies.filter((m) => m.id !== movie.id);
-    this.setState((state) => ({ movies: newMovieList }));
-  };
+    const newMovieList = movies.filter((m) => m.id !== movie.id);
+    setMovies = newMovieList;
+  }, []);
 
-  searchMovie = (event) => {
-    this.setState({ searchQuery: event.target.value });
-  };
+  const searchMovie = useCallback((event) => {
+    setSearchQuery = event.target.value;
+  }, []);
 
-  addMovie = async (movie) => {
-    await axios.post(`http://localhost:300/movies/`, movie);
-    this.setState((state) => ({
-      movies: state.movies.concat([movie]),
-    }));
-    this.getMovies();
-  };
+  const addMovie = useCallback(async (movie) => {
+    await axios.post(`http://localhost:3002/movies/`, movie);
 
-  editMovie = async (movie) => {
-    await axios.put(`http://localhost:300/movies/${id}`, updatedMovie);
-    this.getMovies();
-  };
+    (setMovies = state.movies.concat([movie])), getMovies();
+  }, []);
 
-  render() {
-    let filteredMovies = this.state.movies
-      .filter((movie) => {
+  const editMovie = useCallback(async (movie) => {
+    await axios.put(`http://localhost:3002/movies/${id}`, updatedMovie);
+    getMovies();
+  }, []);
+
+  let filteredMovies = useMemo(
+    () =>
+      setMovies.filter((movie) => {
         return (
-          movie.name
-            .toLowerCase()
-            .indexOf(this.state.searchQuery.toLowerCase()) !== -1
+          movie.name.toLowerCase().indexOf(searchQuery.toLowerCase()) !== -1
         );
-      })
-      .sort((a, b) => {
-        return a.id < b.id ? 1 : a.id > b.id ? -1 : 0;
-      });
-    return (
-      <div className="container">
-        <div className="row">
-          <div className="col-lg-12">
-            <SearchBar searchMovieProp={this.searchMovie} />
-          </div>
-          <Router />
-
-          <div className="container">
-            {/* <Switch> */}
-            <Route
-              path="/"
-              exact
-              render={() => (
-                <React.Fragment>
-                  <div className="row">
-                    <div className="col-lg-12">
-                      <SearchBar searchMovieProp={this.searchMovie} />
-                    </div>
-                  </div>
-
-                  <MovieList
-                    movies={filteredMovies}
-                    deleteMovieProp={this.deleteMovie}
-                  />
-                </React.Fragment>
-              )}
-            ></Route>
-            <Route
-              path="/add"
-              render={(history) => (
-                <AddMovie
-                  onAddMovie={(movie) => {
-                    this.addMovie(movie);
-                    history.push("/");
-                  }}
-                />
-              )}
-            ></Route>
-            <Route
-              path="/edit/:id"
-              render={(props) => (
-                <EditMovie
-                  {...props}
-                  onEditMovie={(id, movie) => {
-                    this.editMovie(id, movie);
-                  }}
-                />
-              )}
-            ></Route>
-
-            <Route path="/edit/:id" Component={EditMovie} />
-
-            {/* </Switch> */}
-          </div>
+      }),
+    [searchQuery]
+  ).sort((a, b) => {
+    return a.id < b.id ? 1 : a.id > b.id ? -1 : 0;
+  });
+  return (
+    <div className="container">
+      <div className="row">
+        <div className="col-lg-12">
+          <SearchBar searchMovieProp={searchMovie(event.target.value)} />
         </div>
         <Router />
-      </div>
-    );
-  }
-}
 
+        <div className="container">
+          {/* <Switch> */}
+          <Route
+            path="/"
+            exact
+            render={() => (
+              <React.Fragment>
+                <div className="row">
+                  <div className="col-lg-12">
+                    <SearchBar searchMovieProp={searchMovie} />
+                  </div>
+                </div>
+
+                <MovieList
+                  movies={filteredMovies}
+                  deleteMovieProp={deleteMovie}
+                />
+              </React.Fragment>
+            )}
+          ></Route>
+          <Route
+            path="/add"
+            render={(history) => (
+              <AddMovie
+                onAddMovie={(movie) => {
+                  addMovie(movie);
+                  history.push("/");
+                }}
+              />
+            )}
+          ></Route>
+          <Route
+            path="/edit/:id"
+            render={(props) => (
+              <EditMovie
+                {...props}
+                onEditMovie={(id, movie) => {
+                  editMovie(id, movie);
+                }}
+              />
+            )}
+          ></Route>
+
+          <Route path="/edit/:id" Component={EditMovie} />
+
+          {/* </Switch> */}
+        </div>
+      </div>
+      <Router />
+    </div>
+  );
+};
 export default App;
