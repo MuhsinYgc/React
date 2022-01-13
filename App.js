@@ -6,6 +6,7 @@ import EditMovie from "./EditMovie";
 import axios from "axios";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 
+
 const App = () => {
   const [movies, setMovies] = useState(0);
   const [searchQuery, setSearchQuery] = useState(0);
@@ -18,6 +19,7 @@ const App = () => {
 
   useEffect(() => {
     getMovies();
+   
   }, []);
 
   // async componentDidMount() {
@@ -27,15 +29,15 @@ const App = () => {
   //---
 
   const getMovies = async () => {
-    response = await axios.get("http://localhost:3002/movies");
+    const response = await axios.get("http://localhost:3002/movies");
     // this.setState({ movies: response.data });
-    setMovies = response.data;
+   setMovies = response.data;
   };
 
-  const deleteMovie = useCallback(async (movie) => {
-    axios.delete(`http://localhost:3002/movies/${movie.id}`);
-    const newMovieList = movies.filter((m) => m.id !== movie.id);
-    setMovies = newMovieList;
+  const deleteMovie = useCallback(async (props) => {
+    axios.delete(`http://localhost:3002/movies/${props.movie.id}`);
+    const newMovieList = props.movies.filter((m) => m.id !== props.movie.id);
+     setMovies = newMovieList;
   }, []);
 
   const searchMovie = useCallback((event) => {
@@ -45,11 +47,11 @@ const App = () => {
   const addMovie = useCallback(async (movie) => {
     await axios.post(`http://localhost:3002/movies/`, movie);
 
-    (setMovies = state.movies.concat([movie])), getMovies();
+    (setMovies = movies.concat([movie])); getMovies();
   }, []);
 
   const editMovie = useCallback(async (movie) => {
-    await axios.put(`http://localhost:3002/movies/${id}`, updatedMovie);
+    await axios.put(`http://localhost:3002/movies/${movie.id}`, movie.updatedMovie);
     getMovies();
   }, []);
 
@@ -68,7 +70,7 @@ const App = () => {
     <div className="container">
       <div className="row">
         <div className="col-lg-12">
-          <SearchBar searchMovieProp={searchMovie(event.target.value)} />
+          <SearchBar searchMovieProp={(event)=>searchMovie(event.target.value)} />
         </div>
         <Router />
 
@@ -81,7 +83,7 @@ const App = () => {
               <React.Fragment>
                 <div className="row">
                   <div className="col-lg-12">
-                    <SearchBar searchMovieProp={searchMovie} />
+                    <SearchBar searchMovieProp={setSearchQuery} />
                   </div>
                 </div>
 

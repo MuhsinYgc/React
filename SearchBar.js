@@ -1,11 +1,24 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef,useEffect,useCallback } from "react";
 import { Link } from "react-router-dom";
+
+// const[searchQuery,setSearchQuery]=useState(0)
+
 
 const SearchBar = () => {
   const inputRef = useRef();
   const handleFormSubmit = (event) => {
     event.preventDefault();
+
   };
+  // const searchMovie = useCallback((event) => {
+  //   setSearchQuery = event.target.value;
+  // }, []);
+
+
+//   useEffect(()=>{
+//     setSearchQuery()
+// },[])
+
 
   return (
     <form onSubmit={handleFormSubmit}>
@@ -13,7 +26,7 @@ const SearchBar = () => {
         <div className="col-10">
           <input
             ref={inputRef}
-            onChange={props.searchMovieProps}
+            onChange={(event)=>(event.target.value)}
             type="text"
             className="form-control"
             placeholder="Search a movie"

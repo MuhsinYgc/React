@@ -2,26 +2,27 @@ import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useInput } from "../useInput/useInput";
 
-const EditMovie = () => {
+
+const EditMovie = (props) => {
   const [load, setLoad] = useState(0);
   const [state, setState] = useState(0);
   const [count, setCount] = useState(0);
   const inputRef = useRef();
 
   useEffect(() => {
-    id = this.props.match.params.id;
+   const id = props.match.params.id;
     load();
     setCount({
-      name: movie.name,
-      rating: movie.rating,
-      overview: movie.overview,
-      imageURL: movie.imageURL,
+      name: props.movie.name,
+      rating: props.movie.rating,
+      overview: props.movie.overview,
+      imageURL: props.movie.imageURL,
     });
-  }, [names, rating, overview, imageURL, setLoad]);
+  }, []);
 
   load = async () => {
-    const response = await axios.get(`http://localhost:3002/movies/${id}`);
-    movie = response.data;
+    const response = await axios.get(`http://localhost:3002/movies/${props.id}`);
+    props.movie = response.data;
   };
 
   const localStorageInputs = localStorage.getItem("inputs");
@@ -40,7 +41,7 @@ const EditMovie = () => {
   const handleFormSubmit = (e) => {
     e.preventDefault();
     const { name, rating, overview, imageURL } = this.state;
-    const id = this.props.match.params.id;
+    const id = props.match.params.id;
     const updatedMovie = {
       name: name,
       rating: rating,

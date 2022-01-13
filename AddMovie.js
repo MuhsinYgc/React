@@ -1,14 +1,22 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import serialize from "form-serialize";
 
+
 const AddMovie = () => {
-  useEffect(() => {
-    handleFormSubmit = (event) => {
-      e.preventDefault();
-      const newMovie = serialize(e.target, { hash: true });
-      props.onAddMovie(newMovie);
+  
+    const handleFormSubmit = (event) => {
+      event.preventDefault();
     };
-  }, [handleFormSubmit]);
+    useEffect(()=>{  
+      //const newMovie = serialize(props.target, { hash: true });,
+      newMovie();
+      //props.onAddMovie(newMovie);
+      AddMovie(newMovie)
+  }, []);
+
+  const newMovie =(props)=>{
+      serialize(props.target,{hash:true})
+  }
 
   //   handleFormSubmit = (e) => {
   //         e.preventDefault();
