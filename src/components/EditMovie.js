@@ -1,111 +1,131 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
+import { useInput } from "../useInput/useInput";
 
-class EditMovie extends React.Component {
-  state = {
+
+const EditMovie = (props) => {
+  const [load, setLoad] = useState(0);
+  const [state, setState] = useState(0);
+  const [count, setCount] = useState(0);
+  const inputRef = useRef();
+
+  useEffect(() => {
+   const id = props.match.params.id;
+    load();
+    setCount({
+      name: props.movie.name,
+      rating: props.movie.rating,
+      overview: props.movie.overview,
+      imageURL: props.movie.imageURL,
+    });
+  }, []);
+
+  load = async () => {
+    const response = await axios.get(`http://localhost:3002/movies/${props.id}`);
+    props.movie = response.data;
+  };
+
+  const localStorageInputs = localStorage.getItem("inputs");
+
+  const INITIAL_STATE = {
     name: "",
     rating: "",
     overview: "",
     imageURL: "",
   };
 
-  async componentDidMount() {
-    const id = this.props.match.params.id;
-    const response = await axios.get(`http://localhost:3002/movies/${id}`);
-    const movie = response.data;
-    this.setState({
-      name: movie.name,
-      rating: movie.rating,
-      overview: movie.overview,
-      imageURL: movie.imageURL,
-    });
-  }
-  onInputChange = (e) => {
-    this.setState({
-      [e.target.name]: e.target.value,
-    });
-  };
+  const [inputs, setInputs] = useInput(
+    JSON.parse(localStorageInputs) || INITIAL_STATE
+  );
 
-  handleFormSubmit = (e) => {
+  const handleFormSubmit = (e) => {
     e.preventDefault();
     const { name, rating, overview, imageURL } = this.state;
-    const id = this.props.match.params.id;
+    const id = props.match.params.id;
     const updatedMovie = {
       name: name,
       rating: rating,
       overview: overview,
       imageURL: imageURL,
     };
-    this.props.onEditMovie(id, updatedMovie);
-    this.props.history("/");
+    props.onEditMovie(id, updatedMovie);
+    props.history("/");
   };
 
-  render() {
-    return (
-      <div className="container">
-        <form className="mt-5" onSubmit={this.handleFormSubmit}>
-          <input
-            className="form-control"
-            id="disabledInput"
-            type="text"
-            placeholder="EDIT The Form To Update A Movie.."
-            disabled
-          />
-          <div className="form-row">
-            <div className="form-group col-md-10">
-              <label htmlFor="inputName">Name</label>
-              <input
-                type="text"
-                className="form-control"
-                name="name"
-                value={this.state.name}
-                onChange={this.onInputChange}
-              />
-            </div>
-            <div className="form-group col-md-2">
-              <label htmlFor="inputRating">Rating</label>
-              <input
-                type="text"
-                className="form-control"
-                name="rating"
-                value={this.state.rating}
-                onChange={this.onInputChange}
-              />
-            </div>
+  useEffect(() => {
+    localStorage.setItem("inputs", JSON.stringify(inputs));
+  }, [inputs]);
+
+  return (
+    <div className="container">
+      <form className="mt-5" onSubmit={handleFormSubmit}>
+        <input
+          ref={inputRef}
+          className="form-control"
+          id="disabledInput"
+          type="text"
+          placeholder="EDIT The Form To Update A Movie.."
+          disabled
+        />
+        <div className="form-row">
+          <div className="form-group col-md-10">
+            <label htmlFor="inputName">Name</label>
+            <input
+              ref={inputRef}
+              type="text"
+              className="form-control"
+              name="name"
+              value={inputs.name}
+              onChange={setInputs}
+            />
           </div>
-          <div className="form-row">
-            <div className="form-group col-md-12">
-              <label htmlFor="inputImage">Image URL</label>
-              <input
-                type="text"
-                className="form-control"
-                name="imageURL"
-                value={this.state.imageURL}
-                onChange={this.onInputChange}
-              />
-            </div>
+          <div className="form-group col-md-2">
+            <label htmlFor="inputRating">Rating</label>
+            <input
+              ref={inputRef}
+              type="text"
+              className="form-control"
+              name="rating"
+              value={inputs.rating}
+              onChange={setInputs}
+            />
           </div>
-          <div className="form-row">
-            <div className="form-group col-md-12">
-              <label htmlFor="overviewTextarea">Overview</label>
-              <textarea
-                className="form-control"
-                name="overview"
-                rows="5"
-                value={this.state.overview}
-                onChange={this.onInputChange}
-              ></textarea>
-            </div>
+        </div>
+        <div className="form-row">
+          <div className="form-group col-md-12">
+            <label htmlFor="inputImage">Image URL</label>
+            <input
+              ref={inputRef}
+              type="text"
+              className="form-control"
+              name="imageURL"
+              value={inputs.imageURL}
+              onChange={setInputs}
+            />
           </div>
-          <input
-            type="submit"
-            className="btn btn-danger btn-block"
-            value="Add Movie"
-          />
-        </form>
-      </div>
-    );
-  }
-}
+        </div>
+        <div className="form-row">
+          <div className="form-group col-md-12">
+            <label htmlFor="overviewTextarea">Overview</label>
+            <textarea
+              className="form-control"
+              name="overview"
+              rows="5"
+              // value={this.state.overview}
+              value={inputs.overview}
+              onChange={setInputs}
+            ></textarea>
+          </div>
+        </div>
+        <input
+          ref={inputRef}
+          type="submit"
+          className="btn btn-danger btn-block"
+          value="Add Movie"
+        />
+      </form>
+    </div>
+  );
+};
 
 export default EditMovie;

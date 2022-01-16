@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
+
 const MovieList = (props) => {
   const truncateOverview = (string, maxLength) => {
     if (!string) return null;
@@ -26,7 +27,7 @@ const MovieList = (props) => {
               <div className="d-flex justify-content-between align-items-center">
                 <button
                   type="button"
-                  onClick={(event) => props.deleteMovieProp(movie)}
+                  onClick={(props) => props.deleteMovieProp(movie)}
                   className="btn btn-md btn-outline-danger"
                 >
                   Delete
