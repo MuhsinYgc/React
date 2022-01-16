@@ -39,7 +39,7 @@ const SearchBar = () => {
             className="btn btn-md btn-dange"
             style={{ float: "right" }}
           >
-            Add movie
+            Add movie osman
           </Link>
         </div>
       </div>
